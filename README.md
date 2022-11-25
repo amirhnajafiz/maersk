@@ -1,9 +1,14 @@
 <p align="center">
-  <img src=".github/assets/maersk.jpeg" width="500" alt="logo" /><br /><br />
-  Concurrent and Safe file downloader implemented in Golang
+  <img src=".github/assets/maersk.jpeg" width="500" alt="logo" /><br />
 </p>
 
 <br />
+
+<p align="center">
+    <img src="https://img.shields.io/badge/Go-1.16+-00ADD8?style=for-the-badge&logo=go" alt="go version" />
+    <img src="https://img.shields.io/badge/Version-0.1.0-00ADD8?style=for-the-badge&logo=github" alt="version" /><br />
+    Concurrent and Safe file downloader implemented in Golang
+</p>
 
 ## What is Maersk?
 
