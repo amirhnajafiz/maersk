@@ -1,8 +1,9 @@
-<h1 align="center">
-  Maersk
-</h1>
+<p align="center">
+  <img src=".github/assets/maersk.jpeg" width="500" alt="logo" /><br /><br />
+  Concurrent and Safe file downloader implemented in Golang
+</p>
 
-Concurrent and Safe file downloader implemented in Golang.
+<br />
 
 ## What is Maersk?
 
