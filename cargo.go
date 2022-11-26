@@ -1,6 +1,7 @@
 package maersk
 
 import (
+	"errors"
 	"io/ioutil"
 	"log"
 	"net/http"
@@ -25,6 +26,8 @@ func (c *Cargo) Ship() error {
 	var (
 		// size is the number of jobs
 		size int
+		// the size of our file
+		fileSize int
 		// channel is for sending chunks
 		channel = make(chan chunk, c.Workers)
 		// jobs channel
@@ -48,24 +51,27 @@ func (c *Cargo) Ship() error {
 		return err
 	}
 
+	// getting the header of content length
 	if header, ok := resp.Header["Content-Length"]; ok {
-		fileSize, er := strconv.Atoi(header[0])
-		if er != nil {
-			return er
+		fileSize, err = strconv.Atoi(header[0])
+		if err != nil {
+			return err
 		}
 
 		size = fileSize / c.Chunks
 	} else {
-		log.Fatal("File size was not provided!")
+		return errors.New("new error")
 	}
 
+	// generating workers
 	for i := 0; i < c.Workers; i++ {
+		// creating one worker
 		w := worker{
 			channel: channel,
 			jobs:    jobs,
 			url:     c.URL,
 		}
-
+		// starting worker
 		go func(j int) {
 			err := w.work()
 			if err != nil {
@@ -74,6 +80,7 @@ func (c *Cargo) Ship() error {
 		}(i)
 	}
 
+	// create jobs based on the number of chunks
 	for i := 0; i < c.Chunks; i++ {
 		j := job{
 			index: i,
@@ -84,6 +91,7 @@ func (c *Cargo) Ship() error {
 		jobs <- j
 	}
 
+	// counting until we get each of the chunks
 	counter := 0
 	for part := range channel {
 		counter++
@@ -94,17 +102,16 @@ func (c *Cargo) Ship() error {
 		}
 	}
 
-	file := make([]byte, 1024)
+	// storing the chunks into the output file
+	file := make([]byte, fileSize)
 
+	// appending into fies array
 	for _, part := range c.chunks {
 		file = append(file, part...)
 	}
 
-	// Set permissions accordingly, 0700 may not
-	// be the best choice
-	err = ioutil.WriteFile("./data.zip", file, 0700)
-
-	if err != nil {
+	// Set permissions accordingly, 0700 may not be the best choice
+	if err = ioutil.WriteFile(c.Out, file, 0700); err != nil {
 		return err
 	}
 
