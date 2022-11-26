@@ -19,7 +19,9 @@ type Cargo struct {
 	Workers int
 	Chunks  int
 	Timeout time.Duration
+	created time.Time
 	chunks  [][]byte
+	failed  int
 }
 
 func (c *Cargo) Ship() error {
