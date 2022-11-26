@@ -13,15 +13,16 @@ import (
 // is the main module of maersk. In cargo the operation
 // of downloading chunks with workers is handled.
 type Cargo struct {
-	Out     string
-	URL     string
-	Mode    string
-	Workers int
-	Chunks  int
-	Timeout time.Duration
-	created time.Time
-	chunks  [][]byte
-	failed  int
+	Out        string
+	URL        string
+	Mode       string
+	Workers    int
+	Chunks     int
+	Timeout    time.Duration
+	created    time.Time
+	chunks     [][]byte
+	failed     int
+	killSwitch chan int
 }
 
 // Ship
@@ -39,15 +40,16 @@ func (c *Cargo) Ship() error {
 		jobs = make(chan job, c.Chunks)
 		// failed jobs channel
 		failed = make(chan job)
-		// kill switch channel
-		killSwitch = make(chan int)
 	)
+
+	// kill switch channel
+	c.killSwitch = make(chan int)
 
 	// building the crane
 	crane := crane{
 		jobs:       jobs,
 		failed:     failed,
-		killSwitch: killSwitch,
+		killSwitch: c.killSwitch,
 		program: func(id int) error {
 			c.failed++
 
@@ -104,7 +106,7 @@ func (c *Cargo) Ship() error {
 			channel:    channel,
 			jobs:       jobs,
 			failed:     failed,
-			killSwitch: killSwitch,
+			killSwitch: c.killSwitch,
 			timeout:    c.Timeout,
 			url:        c.URL,
 		}
@@ -152,6 +154,14 @@ func (c *Cargo) Ship() error {
 	if err = ioutil.WriteFile(c.Out, file, 0700); err != nil {
 		return fmt.Errorf("failed to assemble the chunks: %v", err)
 	}
+
+	return nil
+}
+
+// Cancel
+// stops all the processes and workers.
+func (c *Cargo) Cancel() error {
+	c.killSwitch <- 1
 
 	return nil
 }
