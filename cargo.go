@@ -45,8 +45,9 @@ func (c *Cargo) Ship() error {
 
 	// building the crane
 	crane := crane{
-		jobs:   jobs,
-		failed: failed,
+		jobs:       jobs,
+		failed:     failed,
+		killSwitch: killSwitch,
 		program: func(id int) error {
 			c.failed++
 
