@@ -1,7 +1,7 @@
 package maersk
 
 import (
-	"errors"
+	"fmt"
 	"io/ioutil"
 	"log"
 	"net/http"
@@ -24,6 +24,9 @@ type Cargo struct {
 	failed  int
 }
 
+// Ship
+// starts the workers and gets the chunks to
+// build the output file.
 func (c *Cargo) Ship() error {
 	var (
 		// size is the number of jobs
@@ -44,25 +47,25 @@ func (c *Cargo) Ship() error {
 
 	req, err := http.NewRequest("HEAD", c.URL, nil)
 	if err != nil {
-		return err
+		return fmt.Errorf("failed to create http request: %v", err)
 	}
 
 	// making http request
 	resp, err := client.Do(req)
 	if err != nil {
-		return err
+		return fmt.Errorf("failed to make http request: %v", err)
 	}
 
 	// getting the header of content length
 	if header, ok := resp.Header["Content-Length"]; ok {
 		fileSize, err = strconv.Atoi(header[0])
 		if err != nil {
-			return err
+			return fmt.Errorf("failed to get content length: %v", err)
 		}
 
 		size = fileSize / c.Chunks
 	} else {
-		return errors.New("new error")
+		return fmt.Errorf("failed to get content length")
 	}
 
 	// generating workers
@@ -75,9 +78,8 @@ func (c *Cargo) Ship() error {
 		}
 		// starting worker
 		go func(j int) {
-			err := w.work()
-			if err != nil {
-				log.Println(err)
+			if e := w.work(); e != nil {
+				log.Println(fmt.Errorf("failed to start worker:\n\t%v\n", e))
 			}
 		}(i)
 	}
@@ -114,7 +116,7 @@ func (c *Cargo) Ship() error {
 
 	// Set permissions accordingly, 0700 may not be the best choice
 	if err = ioutil.WriteFile(c.Out, file, 0700); err != nil {
-		return err
+		return fmt.Errorf("failed to assemble the chunks: %v", err)
 	}
 
 	return nil
