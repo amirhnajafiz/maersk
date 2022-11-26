@@ -101,6 +101,7 @@ func (c *Cargo) Ship() error {
 			channel: channel,
 			jobs:    jobs,
 			failed:  failed,
+			timeout: c.Timeout,
 			url:     c.URL,
 		}
 		// starting worker

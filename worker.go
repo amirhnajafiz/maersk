@@ -1,9 +1,11 @@
 package maersk
 
 import (
+	"context"
 	"fmt"
 	"io"
 	"net/http"
+	"time"
 )
 
 // Manages to download each chunk from given url.
@@ -16,13 +18,35 @@ type worker struct {
 	jobs chan job
 	// failed jobs channel
 	failed chan job
+	// timeout time of processing
+	timeout time.Duration
 }
 
 // work function starts the worker to listen
 // on jobs channel.
 func (w *worker) work() error {
+	// listen on jobs channel
 	for j := range w.jobs {
-		if err := w.process(j.index, j.size, j.last); err != nil {
+		// creating context
+		ctx, cancel := context.WithTimeout(context.Background(), w.timeout)
+		ch := make(chan int, 1)
+
+		// starting the process
+		go func() {
+			if err := w.process(j.index, j.size, j.last); err != nil {
+				w.failed <- j
+			}
+
+			ch <- 0
+		}()
+
+		// wait for timeout
+		select {
+		case <-ch:
+			cancel()
+			continue
+		case <-ctx.Done():
+			cancel()
 			w.failed <- j
 		}
 	}
