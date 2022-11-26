@@ -25,10 +25,10 @@ func (c *Cargo) Ship() error {
 	var (
 		// size is the number of jobs
 		size int
-		// size of the file
-		fileSize int
 		// channel is for sending chunks
 		channel = make(chan chunk, c.Workers)
+		// jobs channel
+		jobs = make(chan job, c.Chunks)
 	)
 
 	// generating the list of chunks
@@ -49,12 +49,12 @@ func (c *Cargo) Ship() error {
 	}
 
 	if header, ok := resp.Header["Content-Length"]; ok {
-		fileSize, err = strconv.Atoi(header[0])
-		if err != nil {
-			return err
+		fileSize, er := strconv.Atoi(header[0])
+		if er != nil {
+			return er
 		}
 
-		size = fileSize / c.Workers
+		size = fileSize / c.Chunks
 	} else {
 		log.Fatal("File size was not provided!")
 	}
@@ -62,6 +62,7 @@ func (c *Cargo) Ship() error {
 	for i := 0; i < c.Workers; i++ {
 		w := worker{
 			channel: channel,
+			jobs:    jobs,
 			url:     c.URL,
 		}
 
@@ -73,13 +74,22 @@ func (c *Cargo) Ship() error {
 		}(i)
 	}
 
-	counter := 0
+	for i := 0; i < c.Chunks; i++ {
+		j := job{
+			index: i,
+			size:  size,
+			last:  i == c.Chunks-1,
+		}
 
+		jobs <- j
+	}
+
+	counter := 0
 	for part := range channel {
 		counter++
 
 		c.chunks[part.index] = part.data
-		if counter == c.Workers {
+		if counter == c.Chunks {
 			break
 		}
 	}
