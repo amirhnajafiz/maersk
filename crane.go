@@ -11,7 +11,7 @@ type crane struct {
 	// failed jobs channel.
 	failed chan job
 	// crane program for managing the failed jobs.
-	program func() error
+	program func(int) error
 }
 
 // start
@@ -20,7 +20,7 @@ func (c *crane) start() error {
 	for j := range c.failed {
 		c.jobs <- j
 
-		if err := c.program(); err != nil {
+		if err := c.program(j.index); err != nil {
 			return fmt.Errorf("crane stopped: %v", err)
 		}
 	}

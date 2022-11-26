@@ -45,8 +45,12 @@ func (c *Cargo) Ship() error {
 	crane := crane{
 		jobs:   jobs,
 		failed: failed,
-		program: func() error {
+		program: func(id int) error {
 			c.failed++
+
+			if c.Mode == DEBUG || c.Mode == INFO {
+				log.Printf("chunk failed:\n\tindex: %d\n", id)
+			}
 
 			return nil
 		},
@@ -55,7 +59,9 @@ func (c *Cargo) Ship() error {
 	// starting crane
 	go func() {
 		if err := crane.start(); err != nil {
-			log.Printf("no crane:\n\t%v\n", err)
+			if c.Mode != OFF {
+				log.Printf("no crane:\n\t%v\n", err)
+			}
 		}
 	}()
 
@@ -100,7 +106,9 @@ func (c *Cargo) Ship() error {
 		// starting worker
 		go func(j int) {
 			if e := w.work(); e != nil {
-				log.Println(fmt.Errorf("failed to start worker:\n\t%v\n", e))
+				if c.Mode != OFF {
+					log.Println(fmt.Errorf("failed to start worker:\n\t%v\n", e))
+				}
 			}
 		}(i)
 	}
