@@ -63,6 +63,10 @@ func (c *Cargo) Ship() error {
 
 	// starting crane
 	go func() {
+		if c.Mode == INFO {
+			log.Println("crane created")
+		}
+
 		if err := crane.start(); err != nil {
 			if c.Mode != OFF {
 				log.Printf("no crane:\n\t%v\n", err)
