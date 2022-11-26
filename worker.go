@@ -14,6 +14,8 @@ type worker struct {
 	channel chan chunk
 	// input channel for getting the jobs.
 	jobs chan job
+	// failed jobs channel
+	failed chan job
 }
 
 // work function starts the worker to listen
@@ -21,7 +23,7 @@ type worker struct {
 func (w *worker) work() error {
 	for j := range w.jobs {
 		if err := w.process(j.index, j.size, j.last); err != nil {
-			return err
+			w.failed <- j
 		}
 	}
 

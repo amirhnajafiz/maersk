@@ -37,12 +37,14 @@ func (c *Cargo) Ship() error {
 		channel = make(chan chunk, c.Workers)
 		// jobs channel
 		jobs = make(chan job, c.Chunks)
+		// failed jobs channel
+		failed = make(chan job)
 	)
 
 	// building the crane
 	crane := crane{
 		jobs:   jobs,
-		failed: nil,
+		failed: failed,
 		program: func() error {
 			c.failed++
 
@@ -92,6 +94,7 @@ func (c *Cargo) Ship() error {
 		w := worker{
 			channel: channel,
 			jobs:    jobs,
+			failed:  failed,
 			url:     c.URL,
 		}
 		// starting worker
