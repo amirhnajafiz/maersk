@@ -121,3 +121,28 @@ func (c *Cargo) Ship() error {
 
 	return nil
 }
+
+// Reports
+// returns a status of cargo.
+func (c *Cargo) Reports() *Report {
+	return &Report{
+		Created:          c.created,
+		NumberOfChunks:   c.Chunks,
+		DownloadedChunks: c.numberOfDownloads(),
+		NumberOfErrors:   c.failed,
+	}
+}
+
+// numberOfDownloads
+// counts the number of downloaded chunks.
+func (c *Cargo) numberOfDownloads() int {
+	counter := 0
+
+	for index := range c.chunks {
+		if c.chunks[index] != nil {
+			counter++
+		}
+	}
+
+	return counter
+}

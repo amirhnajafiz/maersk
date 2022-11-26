@@ -1,5 +1,7 @@
 package maersk
 
+import "time"
+
 // Every part of our file is a chunk.
 // We assemble the file based on chunks index.
 type chunk struct {
@@ -18,4 +20,13 @@ type job struct {
 	size int
 	// is the last job or not
 	last bool
+}
+
+// Report type.
+// stores the information of a cargo.
+type Report struct {
+	Created          time.Time
+	NumberOfChunks   int
+	DownloadedChunks int
+	NumberOfErrors   int
 }
