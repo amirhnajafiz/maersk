@@ -39,6 +39,24 @@ func (c *Cargo) Ship() error {
 		jobs = make(chan job, c.Chunks)
 	)
 
+	// building the crane
+	crane := crane{
+		jobs:   jobs,
+		failed: nil,
+		program: func() error {
+			c.failed++
+
+			return nil
+		},
+	}
+
+	// starting crane
+	go func() {
+		if err := crane.start(); err != nil {
+			log.Printf("no crane:\n\t%v\n", err)
+		}
+	}()
+
 	// generating the list of chunks
 	c.chunks = make([][]byte, c.Chunks)
 
