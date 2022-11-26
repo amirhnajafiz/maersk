@@ -18,6 +18,8 @@ type worker struct {
 	jobs chan job
 	// failed jobs channel
 	failed chan job
+	// kill switch channel
+	killSwitch chan int
 	// timeout time of processing
 	timeout time.Duration
 }
@@ -48,6 +50,9 @@ func (w *worker) work() error {
 		case <-ctx.Done():
 			cancel()
 			w.failed <- j
+		case <-w.killSwitch:
+			cancel()
+			break
 		}
 	}
 

@@ -39,6 +39,8 @@ func (c *Cargo) Ship() error {
 		jobs = make(chan job, c.Chunks)
 		// failed jobs channel
 		failed = make(chan job)
+		// kill switch channel
+		killSwitch = make(chan int)
 	)
 
 	// building the crane
@@ -98,11 +100,12 @@ func (c *Cargo) Ship() error {
 	for i := 0; i < c.Workers; i++ {
 		// creating one worker
 		w := worker{
-			channel: channel,
-			jobs:    jobs,
-			failed:  failed,
-			timeout: c.Timeout,
-			url:     c.URL,
+			channel:    channel,
+			jobs:       jobs,
+			failed:     failed,
+			killSwitch: killSwitch,
+			timeout:    c.Timeout,
+			url:        c.URL,
 		}
 		// starting worker
 		go func(j int) {
