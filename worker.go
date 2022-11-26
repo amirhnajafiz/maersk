@@ -12,11 +12,25 @@ type worker struct {
 	url string
 	// channel for sending the downloaded chunk.
 	channel chan chunk
+	// input channel for getting the jobs.
+	jobs chan job
 }
 
-// work
+// work function starts the worker to listen
+// on jobs channel.
+func (w *worker) work() error {
+	for j := range w.jobs {
+		if err := w.process(j.index, j.size, j.last); err != nil {
+			return err
+		}
+	}
+
+	return nil
+}
+
+// process
 // downloads a chunk of file from given url.
-func (w *worker) work(index, size int, isLast bool) error {
+func (w *worker) process(index, size int, isLast bool) error {
 	var (
 		// creating http client
 		client = &http.Client{}
@@ -46,7 +60,9 @@ func (w *worker) work(index, size int, isLast bool) error {
 		return fmt.Errorf("http request failed: %v", err)
 	}
 
-	defer response.Body.Close()
+	defer func() {
+		_ = response.Body.Close()
+	}()
 
 	// read response body
 	body, err := io.ReadAll(response.Body)

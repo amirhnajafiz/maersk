@@ -66,7 +66,7 @@ func (c *Cargo) Ship() error {
 		}
 
 		go func(j int) {
-			err := w.work(j, size, j == c.Workers-1)
+			err := w.work()
 			if err != nil {
 				log.Println(err)
 			}
