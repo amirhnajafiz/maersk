@@ -102,7 +102,7 @@ func (c *Cargo) Ship() error {
 	// generating workers
 	for i := 0; i < c.Workers; i++ {
 		// creating one worker
-		w := worker{
+		s := ship{
 			channel:    channel,
 			jobs:       jobs,
 			failed:     failed,
@@ -112,7 +112,7 @@ func (c *Cargo) Ship() error {
 		}
 		// starting worker
 		go func(j int) {
-			if e := w.work(); e != nil {
+			if e := s.berth(); e != nil {
 				if c.Mode != OFF {
 					log.Println(fmt.Errorf("failed to start worker:\n\t%v\n", e))
 				}

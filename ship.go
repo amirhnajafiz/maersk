@@ -9,7 +9,7 @@ import (
 )
 
 // Manages to download each chunk from given url.
-type worker struct {
+type ship struct {
 	// host url for downloading file.
 	url string
 	// channel for sending the downloaded chunk.
@@ -24,19 +24,19 @@ type worker struct {
 	timeout time.Duration
 }
 
-// work function starts the worker to listen
+// berth function starts the ship worker to listen
 // on jobs channel.
-func (w *worker) work() error {
+func (s *ship) berth() error {
 	// listen on jobs channel
-	for j := range w.jobs {
+	for j := range s.jobs {
 		// creating context
-		ctx, cancel := context.WithTimeout(context.Background(), w.timeout)
+		ctx, cancel := context.WithTimeout(context.Background(), s.timeout)
 		ch := make(chan int, 1)
 
 		// starting the process
 		go func() {
-			if err := w.process(j.index, j.size, j.last); err != nil {
-				w.failed <- j
+			if err := s.sail(j.index, j.size, j.last); err != nil {
+				s.failed <- j
 			}
 
 			ch <- 0
@@ -49,8 +49,8 @@ func (w *worker) work() error {
 			continue
 		case <-ctx.Done():
 			cancel()
-			w.failed <- j
-		case <-w.killSwitch:
+			s.failed <- j
+		case <-s.killSwitch:
 			cancel()
 			break
 		}
@@ -59,9 +59,9 @@ func (w *worker) work() error {
 	return nil
 }
 
-// process
+// sail
 // downloads a chunk of file from given url.
-func (w *worker) process(index, size int, isLast bool) error {
+func (s *ship) sail(index, size int, isLast bool) error {
 	var (
 		// creating http client
 		client = &http.Client{}
@@ -77,7 +77,7 @@ func (w *worker) process(index, size int, isLast bool) error {
 	}
 
 	// make http request
-	req, err := http.NewRequest("GET", w.url, nil)
+	req, err := http.NewRequest("GET", s.url, nil)
 	if err != nil {
 		return fmt.Errorf("make http request failed: %v", err)
 	}
@@ -102,7 +102,7 @@ func (w *worker) process(index, size int, isLast bool) error {
 	}
 
 	// publish the chunk in channel
-	w.channel <- chunk{index: index, data: body}
+	s.channel <- chunk{index: index, data: body}
 
 	return nil
 }
