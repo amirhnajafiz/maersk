@@ -5,10 +5,17 @@
 <br />
 
 <p align="center">
-    <img src="https://img.shields.io/badge/Go-1.16+-00ADD8?style=for-the-badge&logo=go" alt="go version" />
-    <img src="https://img.shields.io/badge/Version-0.1.0-00ADD8?style=for-the-badge&logo=github" alt="version" /><br />
-    Concurrent and Safe file downloader implemented in Golang
+    <img src="https://img.shields.io/badge/Go-1.19-00ADD8?style=for-the-badge&logo=go" alt="go version" />
+    <img src="https://img.shields.io/badge/Version-0.1.1-00ADD8?style=for-the-badge&logo=github" alt="version" /><br />
+    Concurrent and Secure file downloader implemented in Golang
 </p>
+
+## Table of contents
+
+- [How to use Maersk](#how-to-use)
+- [Example](#example)
+- [Idea](#idea)
+- [Contribute](#contribute)
 
 ## What is Maersk?
 
@@ -47,14 +54,14 @@ func main() {
 
 Parameters of **Cargo** struct are as follows:
  
-| Field       | Description                                                     | Value    | Example                         |
-| :---------: | --------------------------------------------------------------- | :------: | ------------------------------- |
-| Out         | Output file name to store the downloaded information in it      | string   | ```"file.zip"```                |
-| URL         | Address of the file that you want to download (http, https url) | string   | ```"example.com/file.tar.gz"``` |
-| Workers     | The number of workers to download the file in concurrent        | int      | ```5```                         |
-| Chunks      | The max number of chunks to download the file in concurrent     | int      | ```20```                        |
-| Timeout     | Timeout for downloading each chunck of file from server         | duration | ```10 * time.Second```          |
-| Mode        | Set the error modes of cargo (debug or info or off)             | string   | ```DEBUG, INFO, OFF```          |
+|  Field  | Description                                                     |  Value   | Example                         |
+|:-------:|-----------------------------------------------------------------|:--------:|---------------------------------|
+|   Out   | Output file name to store the downloaded information in it      |  string  | ```"file.zip"```                |
+|   URL   | Address of the file that you want to download (http, https url) |  string  | ```"example.com/file.tar.gz"``` |
+| Workers | The number of workers to download the file in concurrent        |   int    | ```5```                         |
+| Chunks  | The max number of chunks to download the file in concurrent     |   int    | ```20```                        |
+| Timeout | Timeout for downloading each chunck of file from server         | duration | ```10 * time.Second```          |
+|  Mode   | Set the error modes of cargo (debug or info or off)             |  string  | ```DEBUG, INFO, OFF```          |
 
 You can also use **Order** to make a **Cargo**.
 
@@ -97,6 +104,29 @@ if err := center.Cancel(); err != nil {
 }
 ```
 
+## Example
+
+```go
+package main
+
+import (
+	"log"
+
+	"github.com/amirhnajafiz/maersk"
+)
+
+func main() {
+	center := maersk.Cargo{
+		URL:     "someplace.com",
+		Out:     "file.zip",
+		Workers: 2,
+		Chunks:  2,
+	}
+
+	log.Println(center.Ship())
+}
+```
+
 ## Idea
 
 The idea behind this project is inspired from [Cheikh Seck](https://blog.devgenius.io/concurrent-file-download-with-go-495d7b946492) 
@@ -104,4 +134,4 @@ medium story about concurrent file download with Go. Special thanks to **Cheikh*
 
 ## Contribute
 
-Feel free to submit **Issues** about project.
+Feel free to submit **Issues** about project or give your ideas.
