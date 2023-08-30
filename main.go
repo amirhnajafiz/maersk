@@ -1,6 +1,7 @@
 package main
 
 import (
+	"errors"
 	"flag"
 	"log"
 	"time"
@@ -10,6 +11,11 @@ import (
 
 const (
 	EmptyStr = ""
+)
+
+var (
+	ErrEmptyOutput = errors.New("output field cannot be empty")
+	ErrURL         = errors.New("url field cannot be empty")
 )
 
 func main() {
@@ -25,6 +31,15 @@ func main() {
 	// parse flags
 	flag.Parse()
 
+	// check flags
+	if *OutPutFlag == EmptyStr {
+		log.Fatal(ErrEmptyOutput)
+	}
+
+	if *URLFlag == EmptyStr {
+		log.Fatal(ErrURL)
+	}
+
 	// create order
 	order := &maersk.ShippingOrder{
 		Chunks:  *ChunksFlag,
@@ -37,6 +52,8 @@ func main() {
 
 	// create center
 	center := maersk.Build(order)
+
+	log.Println("request is build")
 
 	// start download
 	if err := center.Ship(); err != nil {
