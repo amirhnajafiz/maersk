@@ -56,12 +56,12 @@ Parameters of **Cargo** struct are as follows:
  
 |  Field  | Description                                                     |  Value   | Example                         |
 |:-------:|-----------------------------------------------------------------|:--------:|---------------------------------|
-|   Out   | Output file name to store the downloaded information in it      |  string  | ```"file.zip"```                |
-|   URL   | Address of the file that you want to download (http, https url) |  string  | ```"example.com/file.tar.gz"``` |
-| Workers | The number of workers to download the file in concurrent        |   int    | ```5```                         |
-| Chunks  | The max number of chunks to download the file in concurrent     |   int    | ```20```                        |
-| Timeout | Timeout for downloading each chunck of file from server         | duration | ```10 * time.Second```          |
-|  Mode   | Set the error modes of cargo (debug or info or off)             |  string  | ```DEBUG, INFO, OFF```          |
+| output  | Output file name to store the downloaded information in it      |  string  | ```"file.zip"```                |
+|   url   | Address of the file that you want to download (http, https url) |  string  | ```"example.com/file.tar.gz"``` |
+| workers | The number of workers to download the file in concurrent        |   int    | ```5```                         |
+| chunks  | The max number of chunks to download the file in concurrent     |   int    | ```20```                        |
+| timeout | Timeout for downloading each chunck of file from server         | duration | ```10 * time.Second```          |
+|  mode   | Set the error modes of cargo (debug or info or off)             |  string  | ```DEBUG, INFO, OFF```          |
 
 You can also use **Order** to make a **Cargo**.
 
@@ -106,25 +106,8 @@ if err := center.Cancel(); err != nil {
 
 ## Example
 
-```go
-package main
-
-import (
-	"log"
-
-	"github.com/amirhnajafiz/maersk"
-)
-
-func main() {
-	center := maersk.Cargo{
-		URL:     "someplace.com",
-		Out:     "file.zip",
-		Workers: 2,
-		Chunks:  2,
-	}
-
-	log.Println(center.Ship())
-}
+```shell
+maersk -output "5MB.zip" -url "http://212.183.159.230/5MB.zip" -workers 10
 ```
 
 ## Idea
