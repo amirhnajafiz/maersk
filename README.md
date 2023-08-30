@@ -13,6 +13,7 @@
 ## Table of contents
 
 - [How to use Maersk](#how-to-use)
+- [Params](#params)
 - [Example](#example)
 - [Idea](#idea)
 - [Contribute](#contribute)
@@ -31,28 +32,21 @@ Maersk was the largest container shipping line and vessel operator in the world 
 
 ## How to use?
 
-First install the Golang module in to your project by ```go get github.com/amirhnajafiz/maersk```. If you want to have the stable version of this
-library, use ```go get github.com/amirhnajafiz/maersk@latest```.
-
-Now you can create a Maersk **Cargo** with the following options:
-
-```go
-import "github.com/amirhnajafiz/maersk"
-
-func main() {
-  center := &maersk.Cargo {
-    Out: "output.zip",
-    URL: "example.com/file.zip",
-    Workers: 5,
-  }
-  
-  if err := center.Ship(); err != nil {
-    panic(err)
-  }
-}
+```shell
+git clone https://github.com/amirhnajafiz/maersk.git
+cd maersk
+make build
 ```
 
-Parameters of **Cargo** struct are as follows:
+In order to use ```maersk``` in every place on your system, make sure to the followings to either ~/.zshrc, ~/.bash_profile, or ~/.bashrc.
+
+```shell
+export PATH="<path-to-cloned-repository>:$PATH"
+```
+
+## Params
+
+Parameters of ```maersk``` struct are as follows:
  
 |  Field  | Description                                                     |  Value   | Example                         |
 |:-------:|-----------------------------------------------------------------|:--------:|---------------------------------|
@@ -62,47 +56,6 @@ Parameters of **Cargo** struct are as follows:
 | chunks  | The max number of chunks to download the file in concurrent     |   int    | ```20```                        |
 | timeout | Timeout for downloading each chunck of file from server         | duration | ```10 * time.Second```          |
 |  mode   | Set the error modes of cargo (debug or info or off)             |  string  | ```DEBUG, INFO, OFF```          |
-
-You can also use **Order** to make a **Cargo**.
-
-```go
-// create shipping order
-order := &maersk.ShippingOrder {
-  Out: "output.zip",
-  URL: "example.com/file.zip",
-  Workers: 5,
-  Mode: maersk.DEBUG,
-  Chunks: 5,
-}
-
-// building the cargo
-center := maersk.Build(order)
-```
-
-For getting the **Cargo** status you can use the ```Reports``` method (returns a **Report** struct).
-
-```go
-// calling the reports method
-fmt.Println(center.Reports())
-```
-
-```go
-// Report type
-type Report struct {
-  Created          time.Time
-  NumberOfChunks   int
-  DownloadedChunks int
-  NumberOfErrors   int
-}
-```
-
-If you want to stop **Cargo** you can use the ```Cancel``` method.
-
-```go
-if err := center.Cancel(); err != nil {
-  log.Printf("cargo failed to cancel your order: %v", err)
-}
-```
 
 ## Example
 
