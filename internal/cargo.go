@@ -1,4 +1,4 @@
-package maersk
+package internal
 
 import (
 	"fmt"
