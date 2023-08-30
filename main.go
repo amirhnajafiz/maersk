@@ -2,6 +2,7 @@ package main
 
 import (
 	"flag"
+	"log"
 	"time"
 
 	maersk "github.com/amirhnajafiz/maersk/internal"
@@ -36,4 +37,19 @@ func main() {
 
 	// create center
 	center := maersk.Build(order)
+
+	// start download
+	if err := center.Ship(); err != nil {
+		log.Fatal(err)
+	}
+
+	// print last report
+	report := center.Reports()
+	log.Printf(
+		"created: %s, downloads: %d out of %d with %d failures\n",
+		report.Created,
+		report.DownloadedChunks,
+		report.NumberOfChunks,
+		report.NumberOfErrors,
+	)
 }
