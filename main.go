@@ -2,8 +2,9 @@ package main
 
 import (
 	"flag"
+	"time"
 
-	"github.com/amirhnajafiz/maersk/internal"
+	maersk "github.com/amirhnajafiz/maersk/internal"
 )
 
 const (
@@ -17,6 +18,22 @@ func main() {
 		WorkersFlag = flag.Int("workers", 1, "number of workers")
 		ChunksFlag  = flag.Int("chunks", 10, "number of chunks")
 		TimeoutFlag = flag.Int("timeout", 10, "timeout in seconds")
-		ModeFlag    = flag.String("mode", internal.INFO, "debug mode")
+		ModeFlag    = flag.String("mode", maersk.INFO, "debug mode")
 	)
+
+	// parse flags
+	flag.Parse()
+
+	// create order
+	order := &maersk.ShippingOrder{
+		Chunks:  *ChunksFlag,
+		Workers: *WorkersFlag,
+		URL:     *URLFlag,
+		Out:     *OutPutFlag,
+		Timeout: time.Duration(*TimeoutFlag) * time.Second,
+		Mode:    *ModeFlag,
+	}
+
+	// create center
+	center := maersk.Build(order)
 }
