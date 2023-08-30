@@ -5,7 +5,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/amirhnajafiz/maersk"
+	maersk "github.com/amirhnajafiz/maersk/internal"
 )
 
 // TestCargo

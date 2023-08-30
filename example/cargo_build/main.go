@@ -5,7 +5,7 @@ import (
 	"log"
 	"time"
 
-	"github.com/amirhnajafiz/maersk"
+	maersk "github.com/amirhnajafiz/maersk/internal"
 )
 
 func main() {

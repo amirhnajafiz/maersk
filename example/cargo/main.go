@@ -3,7 +3,7 @@ package main
 import (
 	"log"
 
-	"github.com/amirhnajafiz/maersk"
+	maersk "github.com/amirhnajafiz/maersk/internal"
 )
 
 func main() {
