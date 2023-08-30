@@ -23,5 +23,6 @@ func Build(order *ShippingOrder) *Cargo {
 		Workers: order.Workers,
 		Chunks:  order.Chunks,
 		Timeout: order.Timeout,
+		created: time.Now(),
 	}
 }
